@@ -41,9 +41,14 @@ if [ $? -eq 0 ]; then
     echo "File uploaded successfully."
     echo "============================="
 
-    # Display the link to the uploaded file using jq
-    FILE_ID=$(echo $RESPONSE | jq -r '.id')
-    echo "You can access your file at: https://pixeldrain.com/u/$FILE_ID"
+    # Parse the file ID from the response using simple string manipulation
+    FILE_ID=$(echo $RESPONSE | grep -o '"id":"[^"]*' | cut -d':' -f2 | tr -d '"')
+
+    if [ -n "$FILE_ID" ]; then
+        echo "You can access your file at: https://pixeldrain.com/u/$FILE_ID"
+    else
+        echo "Failed to extract the file ID from the response."
+    fi
 else
     # Display a separator line after a failed upload
     echo "Failed to upload the file."
